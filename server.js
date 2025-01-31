@@ -46,5 +46,5 @@ app.use("/images", express.static(UPLOADS_DIR));
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server running on http://195.35.45.44:${PORT}`);
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
 });
