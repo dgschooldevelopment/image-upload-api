@@ -7,21 +7,34 @@ const cors = require("cors");
 const app = express();
 const PORT = 5000;
 
-// Enable CORS for frontend access
+// Enable CORS
 app.use(cors());
 
-// Directory where images will be stored
-const UPLOADS_DIR = "/home/root/MGVP/homework_pending";
+// Base directory for storing images
+const BASE_DIR = "/home/root/MGVP";
 
-// Ensure the directory exists
-if (!fs.existsSync(UPLOADS_DIR)) {
-    fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+// Ensure the base directory exists
+if (!fs.existsSync(BASE_DIR)) {
+    fs.mkdirSync(BASE_DIR, { recursive: true });
 }
 
-// Multer storage configuration (Keep original filename)
+// Multer storage configuration (Dynamic Directory Selection)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, UPLOADS_DIR);
+        const folder = req.query.folder; // Get folder from query parameter
+
+        if (!folder) {
+            return cb(new Error("Folder query parameter is required"), null);
+        }
+
+        const uploadPath = path.join(BASE_DIR, folder);
+
+        // Ensure the directory exists
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
+
+        cb(null, uploadPath);
     },
     filename: (req, file, cb) => {
         cb(null, file.originalname); // Keep original filename
@@ -30,19 +43,28 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-// API to upload an image
+// API to upload an image to a user-specified folder
 app.post("/upload", upload.single("image"), (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: "No file uploaded" });
     }
 
-    // URL to access the uploaded image
-    const imageUrl = `http://195.35.45.44/images/${req.file.originalname}`;
-    res.json({ message: "Image uploaded successfully", imageUrl });
+    const folder = req.query.folder;
+    if (!folder) {
+        return res.status(400).json({ error: "Folder query parameter is required" });
+    }
+
+    const imageUrl = `http://195.35.45.44/images/${folder}/${req.file.originalname}`;
+
+    res.json({
+        message: "Image uploaded successfully",
+        uploaded_to: folder,
+        imageUrl: imageUrl,
+    });
 });
 
-// Serve images statically
-app.use("/images", express.static(UPLOADS_DIR));
+// Serve images dynamically from any folder
+app.use("/images", express.static(BASE_DIR));
 
 // Start the server
 app.listen(PORT, () => {
