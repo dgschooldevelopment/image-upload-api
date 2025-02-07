@@ -7,7 +7,7 @@ const cors = require("cors");
 const app = express();
 const PORT = 5000;
 
-// Enable CORS to allow frontend access
+// Enable CORS for frontend access
 app.use(cors());
 
 // Directory where images will be stored
@@ -18,14 +18,13 @@ if (!fs.existsSync(UPLOADS_DIR)) {
     fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
-// Multer storage configuration
+// Multer storage configuration (Keep original filename)
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, UPLOADS_DIR);
     },
     filename: (req, file, cb) => {
-        const uniqueName = Date.now() + path.extname(file.originalname);
-        cb(null, uniqueName);
+        cb(null, file.originalname); // Keep original filename
     },
 });
 
@@ -37,7 +36,8 @@ app.post("/upload", upload.single("image"), (req, res) => {
         return res.status(400).json({ error: "No file uploaded" });
     }
 
-    const imageUrl = `http://195.35.45.44/images/${req.file.filename}`;
+    // URL to access the uploaded image
+    const imageUrl = `http://195.35.45.44/images/${req.file.originalname}`;
     res.json({ message: "Image uploaded successfully", imageUrl });
 });
 
