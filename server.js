@@ -202,5 +202,5 @@ app.get("/recreate/:folder/:filename", async (req, res) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`✅ Server running at: http://${getLocalIP()}:${PORT}`);
+  console.log(`✅ Server running at: http://195.35.45.44:5001`);
 });
