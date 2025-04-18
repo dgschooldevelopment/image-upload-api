@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "image-upload-api-main",
+			"path": ".."
+		},
+		{
+			"name": "upload_image",
+			"path": "../../../Desktop/upload_image"
+		}
+	],
+	"settings": {}
+}
