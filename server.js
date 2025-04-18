@@ -78,22 +78,24 @@ const fs = require("fs");
 const cors = require("cors");
 const os = require("os");
 
-// ✅ Fixed Jimp import for compatibility
+// ✅ Jimp import
 const jimpImport = require("jimp");
 const Jimp = jimpImport.default || jimpImport;
 
 const app = express();
 const PORT = 5001;
-
-app.use(cors());
-
-// Directory path
 const BASE_DIR = "/home/root/MGVP";
 
-// Ensure base folder exists
+// ✅ CORS enabled
+app.use(cors());
+
+// ✅ Serve all existing images
+app.use("/images", express.static(BASE_DIR));
+
+// ✅ Ensure BASE_DIR exists
 if (!fs.existsSync(BASE_DIR)) fs.mkdirSync(BASE_DIR, { recursive: true });
 
-// Multer setup
+// ✅ Multer config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const folder = req.query.folder || "default";
@@ -101,7 +103,9 @@ const storage = multer.diskStorage({
     if (!fs.existsSync(uploadPath)) fs.mkdirSync(uploadPath, { recursive: true });
     cb(null, uploadPath);
   },
-  filename: (req, file, cb) => cb(null, path.basename(file.originalname)),
+  filename: (req, file, cb) => {
+    cb(null, path.basename(file.originalname));
+  },
 });
 
 const upload = multer({
@@ -112,10 +116,10 @@ const upload = multer({
     const mimetype = allowed.test(file.mimetype);
     extname && mimetype ? cb(null, true) : cb(new Error("Only image files are allowed"));
   },
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-// Local IP fetch
+// ✅ Utility: Get local IP
 function getLocalIP() {
   const interfaces = os.networkInterfaces();
   for (let iface in interfaces) {
@@ -126,7 +130,7 @@ function getLocalIP() {
   return "localhost";
 }
 
-// Upload route
+// ✅ Image Upload + Compression
 app.post("/upload", upload.single("image"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file uploaded" });
 
@@ -149,25 +153,23 @@ app.post("/upload", upload.single("image"), async (req, res) => {
 
     fs.writeFileSync(compressedPath, compressedBuffer);
 
-    // Remove original uploaded image (optional)
+    // Optional: delete original uploaded image
     fs.unlinkSync(req.file.path);
 
+    const serverURL = `http://${getLocalIP()}:${PORT}`;
     res.json({
       message: "Compressed image saved successfully",
-      compressedImageURL: `http://195.35.45.44:5001/images/${folder}/${compressedName}`,
-      recreateURL: `http://195.35.45.44:5001/recreate/${folder}/${compressedName}`
+      compressedImageURL: `${serverURL}/images/${folder}/${compressedName}`,
+      recreateURL: `${serverURL}/recreate/${folder}/${compressedName}`,
     });
 
   } catch (err) {
-    console.error(err);
+    console.error("❌ Compression error:", err);
     res.status(500).json({ error: "Processing failed", details: err.message });
   }
 });
 
-// Serve compressed image
-app.use("/images", express.static(BASE_DIR));
-
-// Recreate route
+// ✅ Recreate Route: restore original size
 app.get("/recreate/:folder/:filename", async (req, res) => {
   const { folder, filename } = req.params;
   const imagePath = path.join(BASE_DIR, folder, filename);
@@ -195,12 +197,13 @@ app.get("/recreate/:folder/:filename", async (req, res) => {
     res.set("Content-Type", mimeType);
     res.send(recreated);
   } catch (err) {
-    console.error(err);
+    console.error("❌ Recreate error:", err);
     res.status(500).send("Error recreating image");
   }
 });
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`✅ Server running at: http://195.35.45.44:5001`);
+// ✅ Server Start
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`✅ Server running at: http://${getLocalIP()}:${PORT}`);
 });
+
