@@ -119,16 +119,16 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
-// ✅ Utility: Get local IP
-function getLocalIP() {
-  const interfaces = os.networkInterfaces();
-  for (let iface in interfaces) {
-    for (let alias of interfaces[iface]) {
-      if (alias.family === "IPv4" && !alias.internal) return alias.address;
-    }
-  }
-  return "localhost";
-}
+// // ✅ Utility: Get local IP
+// function getLocalIP() {
+//   const interfaces = os.networkInterfaces();
+//   for (let iface in interfaces) {
+//     for (let alias of interfaces[iface]) {
+//       if (alias.family === "IPv4" && !alias.internal) return alias.address;
+//     }
+//   }
+//   return "localhost";
+// }
 
 // ✅ Image Upload + Compression
 app.post("/upload", upload.single("image"), async (req, res) => {
@@ -156,7 +156,7 @@ app.post("/upload", upload.single("image"), async (req, res) => {
     // Optional: delete original uploaded image
     fs.unlinkSync(req.file.path);
 
-    const serverURL = `http://${getLocalIP()}:${PORT}`;
+    const serverURL = `http://195.35.45.44:5001`;
     res.json({
       message: "Compressed image saved successfully",
       compressedImageURL: `${serverURL}/images/${folder}/${compressedName}`,
@@ -204,6 +204,6 @@ app.get("/recreate/:folder/:filename", async (req, res) => {
 
 // ✅ Server Start
 app.listen(PORT, "0.0.0.0", () => {
-  console.log(`✅ Server running at: http://${getLocalIP()}:${PORT}`);
+  console.log(`✅ Server running at: http://195.35.45.44:5001`);
 });
 
