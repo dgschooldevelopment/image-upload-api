@@ -7,7 +7,7 @@ services:
     ports:
       - "5001:5001"
     volumes:
-      - ./uploads:/home/root/MGVP/homework_pending
+      - /home/root/MGVP:/home/root/MGVP  # ✅ Correct full mount
     environment:
       - NODE_ENV=production
     restart: always
