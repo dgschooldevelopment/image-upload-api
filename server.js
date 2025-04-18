@@ -154,8 +154,8 @@ app.post("/upload", upload.single("image"), async (req, res) => {
 
     res.json({
       message: "Compressed image saved successfully",
-      compressedImageURL: `http://${getLocalIP()}:${PORT}/images/${folder}/${compressedName}`,
-      recreateURL: `http://${getLocalIP()}:${PORT}/recreate/${folder}/${compressedName}`
+      compressedImageURL: `http://195.35.45.44:5001/images/${folder}/${compressedName}`,
+      recreateURL: `http://195.35.45.44:5001/recreate/${folder}/${compressedName}`
     });
 
   } catch (err) {
