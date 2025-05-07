@@ -1,75 +1,75 @@
-// const express = require("express");
-// const multer = require("multer");
-// const path = require("path");
-// const fs = require("fs");
-// const cors = require("cors");
+const express = require("express");
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
+const cors = require("cors");
 
-// const app = express();
-// const PORT = 5001;
+const app = express();
+const PORT = 5001;
 
-// // Enable CORS
-// app.use(cors());
+// Enable CORS
+app.use(cors());
 
-// // Base directory for storing images
-// const BASE_DIR = "/home/root/MGVP";
+// Base directory for storing images
+const BASE_DIR = "/home/root/MGVP";
 
-// // Ensure the base directory exists
-// if (!fs.existsSync(BASE_DIR)) {
-//     fs.mkdirSync(BASE_DIR, { recursive: true });
-// }
+// Ensure the base directory exists
+if (!fs.existsSync(BASE_DIR)) {
+    fs.mkdirSync(BASE_DIR, { recursive: true });
+}
 
-// // Multer storage configuration (Dynamic Directory Selection)
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         const folder = req.query.folder; // Get folder from query parameter
+// Multer storage configuration (Dynamic Directory Selection)
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const folder = req.query.folder; // Get folder from query parameter
 
-//         if (!folder) {
-//             return cb(new Error("Folder query parameter is required"), null);
-//         }
+        if (!folder) {
+            return cb(new Error("Folder query parameter is required"), null);
+        }
 
-//         const uploadPath = path.join(BASE_DIR, folder);
+        const uploadPath = path.join(BASE_DIR, folder);
 
-//         // Ensure the directory exists
-//         if (!fs.existsSync(uploadPath)) {
-//             fs.mkdirSync(uploadPath, { recursive: true });
-//         }
+        // Ensure the directory exists
+        if (!fs.existsSync(uploadPath)) {
+            fs.mkdirSync(uploadPath, { recursive: true });
+        }
 
-//         cb(null, uploadPath);
-//     },
-//     filename: (req, file, cb) => {
-//         cb(null, file.originalname); // Keep original filename
-//     },
-// });
+        cb(null, uploadPath);
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname); // Keep original filename
+    },
+});
 
-// const upload = multer({ storage });
+const upload = multer({ storage });
 
-// // API to upload an image to a user-specified folder
-// app.post("/upload", upload.single("image"), (req, res) => {
-//     if (!req.file) {
-//         return res.status(400).json({ error: "No file uploaded" });
-//     }
+// API to upload an image to a user-specified folder
+app.post("/upload", upload.single("image"), (req, res) => {
+    if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+    }
 
-//     const folder = req.query.folder;
-//     if (!folder) {
-//         return res.status(400).json({ error: "Folder query parameter is required" });
-//     }
+    const folder = req.query.folder;
+    if (!folder) {
+        return res.status(400).json({ error: "Folder query parameter is required" });
+    }
 
-//     const imageUrl = `http://195.35.45.44/images/${folder}/${req.file.originalname}`;
+    const imageUrl = `http://195.35.45.44/images/${folder}/${req.file.originalname}`;
 
-//     res.json({
-//         message: "Image uploaded successfully",
-//         uploaded_to: folder,
-//         imageUrl: imageUrl,
-//     });
-// });
+    res.json({
+        message: "Image uploaded successfully",
+        uploaded_to: folder,
+        imageUrl: imageUrl,
+    });
+});
 
-// // Serve images dynamically from any folder
-// app.use("/images", express.static(BASE_DIR));
+// Serve images dynamically from any folder
+app.use("/images", express.static(BASE_DIR));
 
-// // Start the server
-// app.listen(PORT, () => {
-//     console.log(`Server running on http://0.0.0.0:${PORT}`);
-// });
+// Start the server
+app.listen(PORT, () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
+});
 
 // const express = require("express");
 // const multer = require("multer");
@@ -208,128 +208,128 @@
 // });
 
 
-const express = require("express");
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const cors = require("cors");
-const JimpImport = require("jimp");
-const Jimp = JimpImport.default || JimpImport;
+// const express = require("express");
+// const multer = require("multer");
+// const path = require("path");
+// const fs = require("fs");
+// const cors = require("cors");
+// const JimpImport = require("jimp");
+// const Jimp = JimpImport.default || JimpImport;
 
-const app = express();
-const PORT = 5001;
+// const app = express();
+// const PORT = 5001;
 
-// ✅ Enable CORS
-app.use(cors());
+// // ✅ Enable CORS
+// app.use(cors());
 
-// ✅ Base directory
-const BASE_DIR = "/home/root/MGVP";
+// // ✅ Base directory
+// const BASE_DIR = "/home/root/MGVP";
 
-// ✅ Ensure base directory exists
-if (!fs.existsSync(BASE_DIR)) {
-    fs.mkdirSync(BASE_DIR, { recursive: true });
-}
+// // ✅ Ensure base directory exists
+// if (!fs.existsSync(BASE_DIR)) {
+//     fs.mkdirSync(BASE_DIR, { recursive: true });
+// }
 
-// ✅ Multer storage configuration
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const folder = req.query.folder;
-        if (!folder) {
-            return cb(new Error("Folder query parameter is required"), null);
-        }
-        const uploadPath = path.join(BASE_DIR, folder);
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
-        }
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        cb(null, file.originalname); // Keep original filename
-    },
-});
+// // ✅ Multer storage configuration
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         const folder = req.query.folder;
+//         if (!folder) {
+//             return cb(new Error("Folder query parameter is required"), null);
+//         }
+//         const uploadPath = path.join(BASE_DIR, folder);
+//         if (!fs.existsSync(uploadPath)) {
+//             fs.mkdirSync(uploadPath, { recursive: true });
+//         }
+//         cb(null, uploadPath);
+//     },
+//     filename: (req, file, cb) => {
+//         cb(null, file.originalname); // Keep original filename
+//     },
+// });
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
-// ✅ Upload endpoint
-app.post("/upload", upload.single("image"), async (req, res) => {
-    if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
-    }
+// // ✅ Upload endpoint
+// app.post("/upload", upload.single("image"), async (req, res) => {
+//     if (!req.file) {
+//         return res.status(400).json({ error: "No file uploaded" });
+//     }
 
-    const folder = req.query.folder;
-    if (!folder) {
-        return res.status(400).json({ error: "Folder query parameter is required" });
-    }
+//     const folder = req.query.folder;
+//     if (!folder) {
+//         return res.status(400).json({ error: "Folder query parameter is required" });
+//     }
 
-    const filePath = path.join(BASE_DIR, folder, req.file.originalname);
+//     const filePath = path.join(BASE_DIR, folder, req.file.originalname);
 
-    // ✅ If it's an image, compress it
-    const ext = path.extname(req.file.originalname).toLowerCase();
-    if ([".jpg", ".jpeg", ".png"].includes(ext)) {
-        try {
-            const image = await Jimp.read(filePath);
-            const { width, height } = image.bitmap;
+//     // ✅ If it's an image, compress it
+//     const ext = path.extname(req.file.originalname).toLowerCase();
+//     if ([".jpg", ".jpeg", ".png"].includes(ext)) {
+//         try {
+//             const image = await Jimp.read(filePath);
+//             const { width, height } = image.bitmap;
 
-            await image
-                .resize(width * 0.8, height * 0.8, Jimp.RESIZE_BEZIER)
-                .quality(90)
-                .writeAsync(filePath);
+//             await image
+//                 .resize(width * 0.8, height * 0.8, Jimp.RESIZE_BEZIER)
+//                 .quality(90)
+//                 .writeAsync(filePath);
 
-        } catch (err) {
-            console.error("Image compression failed:", err.message);
-            return res.status(500).json({ error: "Image compression failed", details: err.message });
-        }
-    }
+//         } catch (err) {
+//             console.error("Image compression failed:", err.message);
+//             return res.status(500).json({ error: "Image compression failed", details: err.message });
+//         }
+//     }
 
-    const fileUrl = `http://195.35.45.44:5001/images/${folder}/${req.file.originalname}`;
-    res.json({
-        message: "File uploaded successfully",
-        uploaded_to: folder,
-        fileUrl: fileUrl,
-    });
-});
+//     const fileUrl = `http://195.35.45.44:5001/images/${folder}/${req.file.originalname}`;
+//     res.json({
+//         message: "File uploaded successfully",
+//         uploaded_to: folder,
+//         fileUrl: fileUrl,
+//     });
+// });
 
-// ✅ Serve files statically
-app.use("/images", express.static(BASE_DIR));
+// // ✅ Serve files statically
+// app.use("/images", express.static(BASE_DIR));
 
-// ✅ Recreate original quality image
-app.get("/recreate/:folder/:filename", async (req, res) => {
-    const { folder, filename } = req.params;
-    const filePath = path.join(BASE_DIR, folder, filename);
+// // ✅ Recreate original quality image
+// app.get("/recreate/:folder/:filename", async (req, res) => {
+//     const { folder, filename } = req.params;
+//     const filePath = path.join(BASE_DIR, folder, filename);
 
-    if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ error: "File not found" });
-    }
+//     if (!fs.existsSync(filePath)) {
+//         return res.status(404).json({ error: "File not found" });
+//     }
 
-    const ext = path.extname(filename).toLowerCase();
-    if (![".jpg", ".jpeg", ".png"].includes(ext)) {
-        return res.status(400).json({ error: "Only images can be recreated" });
-    }
+//     const ext = path.extname(filename).toLowerCase();
+//     if (![".jpg", ".jpeg", ".png"].includes(ext)) {
+//         return res.status(400).json({ error: "Only images can be recreated" });
+//     }
 
-    try {
-        const image = await Jimp.read(filePath);
-        const { width, height } = image.bitmap;
+//     try {
+//         const image = await Jimp.read(filePath);
+//         const { width, height } = image.bitmap;
 
-        await image
-            .resize(width / 0.8, height / 0.8, Jimp.RESIZE_BEZIER)
-            .quality(100)
-            .writeAsync(filePath);
+//         await image
+//             .resize(width / 0.8, height / 0.8, Jimp.RESIZE_BEZIER)
+//             .quality(100)
+//             .writeAsync(filePath);
 
-        const recreatedUrl = `http://195.35.45.44:5001/images/${folder}/${filename}`;
-        res.json({
-            message: "Image recreated successfully",
-            imageUrl: recreatedUrl,
-        });
+//         const recreatedUrl = `http://195.35.45.44:5001/images/${folder}/${filename}`;
+//         res.json({
+//             message: "Image recreated successfully",
+//             imageUrl: recreatedUrl,
+//         });
 
-    } catch (err) {
-        console.error("Image recreation failed:", err.message);
-        return res.status(500).json({ error: "Image recreation failed", details: err.message });
-    }
-});
+//     } catch (err) {
+//         console.error("Image recreation failed:", err.message);
+//         return res.status(500).json({ error: "Image recreation failed", details: err.message });
+//     }
+// });
 
-// ✅ Start the server
-app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server running at: http://195.35.45.44:5001`);
-});
+// // ✅ Start the server
+// app.listen(PORT, "0.0.0.0", () => {
+//     console.log(`Server running at: http://195.35.45.44:5001`);
+// });
 
 
